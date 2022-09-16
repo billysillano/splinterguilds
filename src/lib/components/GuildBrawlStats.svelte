@@ -90,7 +90,7 @@
 </script>
 
 <div class="accordion-header d-flex align-items-center py-2 px-3">
-  <strong>Brawls</strong> : Players' stats for the last 10 brawls
+  Stats for the last 10 brawls
   <button class="btn btn-sm btn-primary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#guild-brawl-result" aria-expanded="true" aria-controls="guild-brawl-result">
     <span aria-hidden="true" class="dropdown-toggle"></span>
   </button>

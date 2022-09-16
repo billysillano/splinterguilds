@@ -3,7 +3,7 @@ import ghpages from 'gh-pages';
 ghpages.publish(
     'dist', // path to public directory
     {
-        branch: 'main',
+        branch: 'site',
         repo: 'https://github.com/bo0mburst/splinterguilds.git', // Update to point to your repository  
         user: {
             name: 'Billy Sillano', // update to use your name
