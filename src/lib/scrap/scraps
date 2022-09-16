@@ -1,0 +1,43 @@
+let myGuild = null;
+let guilds = [];
+let brawlers = [];
+// let username = '';
+// let loginLoading = false;
+
+const getLatestBrawl = async () => {
+  // if (!username) {
+  //   return;
+  // }
+  // loginLoading = true;
+  // const auth = await login(username);
+  // if (!auth) {
+  //   console.error('something went wrong: user-login');
+  //   alert ("Sorry it is not working right now");
+  //   return;
+  // } 
+  
+  // $user = auth;
+  // loginLoading = false;
+  // console.log($user)
+
+  // $guildLoading = true;
+  // const { tournament_id, id } = $guildInfo;
+  // console.log($guildInfo)
+  // if (tournament_id && id) {
+  //   const brawlInfo = await getGuildBrawlInfo({tournament_id, id});
+  //   guilds = brawlInfo.guilds.sort((a, b) => {
+  //     return a.name + b.name;
+  //   });
+  //   brawlers = brawlInfo.players.sort((a, b) => {
+  //     return a.fray_index - b.fray_index;
+  //   });
+  //   myGuild = guilds.find(guild => guild.id === id);
+  //   // get matchups
+  //   for( const brawler of brawlers) {
+  //     const results = await getGuildBrawlMatchup({tournament_id, name: brawler.player, user: $user});
+  //     console.log(results);
+  //   }
+  // }
+  // $guildLoading = false;
+  // console.log(brawlers)
+}
