@@ -4,10 +4,33 @@
   import { guilds, guildMembers, guildLoading, guildInfo } from "../store/guilds";
   import GuildCrest from "./GuildCrest.svelte";
 
+  let searchKey = '';
+
+  const setUrl = (id) => {
+    const url = new URL(window.location.href);
+    const search_params = url.searchParams;
+
+    // new value of "id" is set to "101"
+    search_params.set('guild', id);
+
+    // change the search property of the main url
+    url.search = search_params.toString();
+    window.history.pushState("", "", url.search);
+  }
+
   onMount(async () => {
     $guildLoading = true;
     const guildsList = await getGuilds();
     guilds.set(guildsList);
+
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const myParam = urlSearchParams.get('guild');
+    if(myParam) {
+      await viewGuildMembers(myParam);
+      
+      setUrl(myParam)
+    }
+    
     $guildLoading = false;
   })
 
@@ -15,10 +38,13 @@
     $guildLoading = true;
     $guildInfo = await getGuildInfo(id);
     $guildMembers = await getGuildMembers(id);
+    searchKey = $guildInfo.name;
+    setUrl(id);
+
     $guildLoading = false;
+
   }
   
-  let searchKey = '';
 </script>
 
 <div
