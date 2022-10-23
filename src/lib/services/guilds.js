@@ -16,6 +16,22 @@ export const getGuildMembers = async (id) => {
   const res = await fetch(`${GAME_API_URL}/guilds/members?guild_id=${id}&status=active`);
   const members = await res.json();
   if (!members) return [];
+
+  members.forEach(member => {
+    const data = JSON.parse(member.data)
+    const {
+      guild_hall = 0,
+      arena = { DEC: 0, CROWN: 0},
+      barracks = { DEC: 0, CROWN: 0 },
+      guild_shop = { DEC: 0, CROWN: 0},
+      quest_lodge = 0
+    } = data.contributions
+    member.dec = guild_hall + arena.DEC + barracks.DEC + guild_shop.DEC
+    member.quest_lodge = quest_lodge
+    member.crowns = arena.CROWN + barracks.CROWN + guild_shop.CROWN
+
+    member.join_date = new Date(member.join_date).toLocaleDateString()
+  });
   
   return members.reverse();
 }
