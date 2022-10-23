@@ -166,6 +166,11 @@ const closeGuildOpponentInfo = () => $guildOpponentInfo = null;
                 </div>
               </div>
             </div>
+            <div class="mt-3">
+              <a class="text-info text-decoration-none" href="https://splinterlands.com/?p=collection&a={$guildOpponentInfo.name}" target="blank">
+                View collections on splinterlands.com
+              </a>
+            </div>
           {:else}
             <AppSpinner/>
           {/if}

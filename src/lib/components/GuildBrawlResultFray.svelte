@@ -5,6 +5,7 @@
 
   export let players, champion;
   const player = players.find(i => i.fray_index === champion.fray_index);
+  console.log(players, player, champion)
   let result = 0;
 
   if (player && champion.defeated) {
