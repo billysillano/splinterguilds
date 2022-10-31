@@ -76,7 +76,7 @@ const closeGuildOpponentInfo = () => $guildOpponentInfo = null;
         {#each ownGuild.players as champion}
           <tr>
             <td class="p-0 sticky-left">
-              <div class="py-1 px-3 d-flex text-nowrap bg-dark">
+              <div class="py-1 px-3 d-flex flex-wrap text-nowrap bg-dark">
                 <span class="me-2">
                   {champion.player}
                 </span>
