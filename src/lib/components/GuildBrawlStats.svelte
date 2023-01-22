@@ -1,6 +1,7 @@
 <script>
   import { guildInfo } from "../store/guilds";
   import { getGuildBrawlInfo } from "../services/guilds";
+    import { BRAWL_TIER, FRAYS, } from "../constants";
   let playerStat = {};
   let guildStats = {
     brawl_rank: 0,
@@ -9,6 +10,13 @@
     draws: 0,
     losses: 0,
     wins: 0,
+  }
+  const getFrayName = (fray_index) => {
+    const tier = BRAWL_TIER[$guildInfo.brawl_level].tier;
+    const frays = FRAYS[tier];
+
+    const fray = frays[fray_index];
+    return fray;
   }
 
   const init = async () => {
@@ -73,6 +81,7 @@
             meta_pts: 0,
             total_battles: 0,
             wins: 0,
+            frays:{}
            };
           playerStat[player] = res
         }
@@ -84,11 +93,35 @@
         res.meta_pts += value.meta_pts,
         res.total_battles += value.total_battles,
         res.wins += value.wins
+
+        if (!res.frays[value.fray_index]) {
+          res.frays[value.fray_index] = {
+            brawl_level: 0,
+            draws: 0,
+            entered_battles: 0,
+            finish: 0,
+            losses: 0,
+            meta_pts: 0,
+            total_battles: 0,
+            wins: 0,
+            fray_name: '',
+          }
+        }
+        res.frays[value.fray_index].brawl_level += value.brawl_level,
+        res.frays[value.fray_index].draws += value.draws,
+        res.frays[value.fray_index].entered_battles += value.entered_battles,
+        res.frays[value.fray_index].finish += value.finish,
+        res.frays[value.fray_index].losses += value.losses,
+        res.frays[value.fray_index].meta_pts += value.meta_pts,
+        res.frays[value.fray_index].total_battles += value.total_battles,
+        res.frays[value.fray_index].wins += value.wins
+        res.frays[value.fray_index].fray_name = getFrayName(value.fray_index)
+          
         return res;
       }, null);
+
     }
   }
-
   init()
 </script>
 
@@ -106,10 +139,14 @@
 </div>
 <div id="guild-brawl-result" class="accordion-collapse collapse show">
   <div class="table-responsive max-h-500 border border-primary">
-    <table class="table table-sm align-middle mb-0">
+    <table class="table table-sm align-middle mb-0 table-fixed">
       <thead>
         <tr class="sticky-top bg-dark">
-          <th class="px-3 bg-dark"></th>
+          <th class="px-3 bg-dark">
+            <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#player-fray-result" aria-expanded="true" aria-controls="guild-brawl-result">
+              Display frays <span aria-hidden="true" class="dropdown-toggle"></span>
+            </button>
+          </th>
           <th class="px-3 bg-dark">Wins</th>
           <th class="px-3 bg-dark">Losses</th>
           <th class="px-3 bg-dark">Draws</th>
@@ -157,8 +194,46 @@
             </div>
           </td>
         </tr>
+        <tr  id="player-fray-result" class="accordion-collapse collapse">
+          <td colspan="6">
+            <table class="table table-sm mb-0 w-100 table-fixed">
+              {#each Object.entries(stats.frays) as [frayIndex, frayResult]}
+                <tr>
+                  <td>
+                    <div class="px-3 text-extra-small fray-cell text-muted">
+                      Fray {frayResult.fray_name}
+                    </div>
+                  </td>
+                  <td><div class="px-3 fray-cell text-muted">{frayResult.wins}</div></td>
+                  <td><div class="px-3 fray-cell text-muted">{frayResult.losses}</div></td>
+                  <td><div class="px-3 fray-cell text-muted">{frayResult.draws}</div></td>
+                  <td><div class="px-3 fray-cell text-muted">{frayResult.total_battles}</div></td>
+                  <td><div class="px-3 fray-cell text-muted">{Number((frayResult.wins/frayResult.entered_battles) * 100).toFixed(2) }%</div></td>
+                </tr>
+              {/each}
+            </table>
+          </td>
+        </tr>
         {/each}
       </tbody>
     </table>
   </div>
 </div>
+
+<style>
+  .table-fixed {
+    table-layout: fixed;
+  }
+
+  .text-extra-small {
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  .fray-cell {
+    height: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+</style>
