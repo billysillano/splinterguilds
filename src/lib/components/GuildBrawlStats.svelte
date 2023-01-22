@@ -115,7 +115,7 @@
         res.frays[value.fray_index].meta_pts += value.meta_pts,
         res.frays[value.fray_index].total_battles += value.total_battles,
         res.frays[value.fray_index].wins += value.wins
-        res.frays[value.fray_index].fray_name = getFrayName(value.fray_index)
+        res.frays[value.fray_index].fray_name = getFrayName(value.fray_index + 1)
           
         return res;
       }, null);
