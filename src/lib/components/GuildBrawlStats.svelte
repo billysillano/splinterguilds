@@ -11,8 +11,8 @@
     losses: 0,
     wins: 0,
   }
-  const getFrayName = (fray_index) => {
-    const tier = BRAWL_TIER[$guildInfo.brawl_level - 1].tier;
+  const getFrayName = (fray_index, brawl_level) => {
+    const tier = BRAWL_TIER[brawl_level - 1].tier;
     const frays = FRAYS[tier];
 
     const fray = frays[fray_index];
@@ -73,7 +73,6 @@
         // const fray_index = value.fray_index;
         if (!res) {
           res = { 
-            brawl_level: 0,
             draws: 0,
             entered_battles: 0,
             finish: 0,
@@ -85,7 +84,6 @@
            };
           playerStat[player] = res
         }
-        res.brawl_level += value.brawl_level,
         res.draws += value.draws,
         res.entered_battles += value.entered_battles,
         res.finish += value.finish,
@@ -107,7 +105,6 @@
             fray_name: '',
           }
         }
-        res.frays[value.fray_index].brawl_level += value.brawl_level,
         res.frays[value.fray_index].draws += value.draws,
         res.frays[value.fray_index].entered_battles += value.entered_battles,
         res.frays[value.fray_index].finish += value.finish,
@@ -115,7 +112,7 @@
         res.frays[value.fray_index].meta_pts += value.meta_pts,
         res.frays[value.fray_index].total_battles += value.total_battles,
         res.frays[value.fray_index].wins += value.wins
-        res.frays[value.fray_index].fray_name = getFrayName(value.fray_index)
+        res.frays[value.fray_index].fray_name = getFrayName(value.fray_index, value.brawl_level)
           
         return res;
       }, null);
