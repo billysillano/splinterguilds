@@ -2,6 +2,9 @@
   import { guildInfo } from "../store/guilds";
   import { getGuildBrawlInfo } from "../services/guilds";
     import { BRAWL_TIER, FRAYS, } from "../constants";
+    import { formatCompactNumber } from "../utils";
+    import GuildBrawlResult from "./GuildBrawlResult.svelte";
+    import GuildTiers from "./GuildTiers.svelte";
   let playerStat = {};
   let guildStats = {
     brawl_rank: 0,
@@ -11,8 +14,13 @@
     losses: 0,
     wins: 0,
   }
+  let brawlStat;
+
   const getFrayName = (fray_index, brawl_level) => {
-    const tier = BRAWL_TIER[brawl_level - 1].tier;
+    const tier = BRAWL_TIER[brawl_level]?.tier || 0;
+
+    if (!tier) return ''
+
     const frays = FRAYS[tier];
 
     const fray = frays[fray_index];
@@ -20,7 +28,7 @@
   }
 
   const init = async () => {
-    const brawlStat = $guildInfo.brawl_stats.results;
+    brawlStat = [...$guildInfo.brawl_stats.results].reverse();
     const stats = {};
 
     brawlStat.forEach(result => {
@@ -35,6 +43,8 @@
 
     for await (let stat of brawlStat) {
       const result = await getGuildBrawlInfo({tournament_id: stat.tournament_id, id: stat.guild_id});
+      stat.brawl_info = result;
+
       if (result && result.players) {
         result.players.forEach(p => {
           const {
@@ -121,105 +131,159 @@
   }
   init()
 </script>
-
-<div class="accordion-header d-flex flex-wrap align-items-center py-2 px-3">
-  <div class="h5">Stats for the last 10 brawls</div>
-  <button class="btn btn-sm btn-primary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#guild-brawl-result" aria-expanded="true" aria-controls="guild-brawl-result">
-    <span aria-hidden="true" class="dropdown-toggle"></span>
-  </button>
-  <div class="px-2 mt-2 bg-primary flex-grow-1 w-100">
-    <span class="">Ave rank: {guildStats.brawl_rank}</span>
-    <span class="ms-3">Wins: {guildStats.wins}</span>
-    <span class="ms-3">Battles: {guildStats.battles}</span>
-    <span class="ms-3">Win rate: {guildStats.win_rate}%</span>
+<div class="accordion accordion-flush mb-3">
+  <div class="accordion-item">
+    <div class="accordion-header" id="player-brawl-results-heading">
+      <button class="accordion-button bg-dark"  data-bs-toggle="collapse" data-bs-target="#player-brawl-result" aria-expanded="true" aria-controls="player-brawl-result">
+        <div class="d-flex flex-wrap">
+          <div class="h5 mb-0">Last 10 brawls
+            <span class="ms-3 badge bg-primary"><span class="text-muted">Ave placement:</span> {guildStats.brawl_rank}</span>
+            <span class="ms-3 badge bg-primary"><span class="text-muted">Wins:</span>  {guildStats.wins}</span>
+            <span class="ms-3 badge bg-primary"><span class="text-muted">Battles:</span> {guildStats.battles}</span>
+            <span class="ms-3 badge bg-primary"><span class="text-muted">Win rate:</span>  {guildStats.win_rate}%</span>
+          </div>
+        </div>
+      </button>
+    </div>
+    <div id="player-brawl-result" class="accordion-collapse collapse show">
+      <div class="table-responsive max-h-500 border border-primary">
+        <table class="table table-hover table-sm align-middle table-fixed mb-0">
+          <thead>
+            <tr class="sticky-top bg-darker">
+              <th class="px-3"></th>
+              <th class="px-3">Wins</th>
+              <th class="px-3">Losses</th>
+              <th class="px-3">Draws</th>
+              <th class="px-3">Battles</th>
+              <th class="px-3 text-nowrap">Win rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each Object.entries(playerStat) as [player, stats], playerIndex}
+            <tr role="button" data-bs-toggle="collapse" data-bs-target="#player-fray-result-{playerIndex}" aria-expanded="false">
+              <td class="text-nowrap">
+                <div class="px-3 text-info">
+                  {player}
+                </div>
+              </td>
+              <td class="text-nowrap">
+                <div class="px-3">
+                  {stats.wins}
+                </div>
+              </td>
+              <td class="text-nowrap">
+                <div class="px-3">
+                  {stats.losses}
+                </div>
+              </td>
+              <td class="text-nowrap">
+                <div class="px-3">
+                  {stats.draws}
+                </div>
+              </td>
+              <td class="text-nowrap">
+                <div class="px-3">
+                  {stats.total_battles}
+                </div>
+              </td>
+              <!-- <td class="text-nowrap">
+                <div class="px-3">
+                  {(Number(stats.entered_battles / stats.total_battles) * 100).toFixed() }%
+                </div>
+              </td> -->
+              <td class="text-nowrap">
+                <div class="px-3">
+                  {Number((stats.wins/stats.entered_battles) * 100).toFixed(2) }%
+                </div>
+              </td>
+            </tr>
+            <tr  id="player-fray-result-{playerIndex}" class="accordion-collapse collapse">
+              <td colspan="6">
+                <table class="table table-sm mb-0 w-100 table-fixed">
+                  {#each Object.entries(stats.frays) as [frayIndex, frayResult]}
+                    <tr>
+                      <td>
+                        <div class="px-3 text-extra-small fray-cell text-muted">
+                          Fray {frayResult.fray_name}
+                        </div>
+                      </td>
+                      <td><div class="px-3 fray-cell text-muted">{frayResult.wins}</div></td>
+                      <td><div class="px-3 fray-cell text-muted">{frayResult.losses}</div></td>
+                      <td><div class="px-3 fray-cell text-muted">{frayResult.draws}</div></td>
+                      <td><div class="px-3 fray-cell text-muted">{frayResult.total_battles}</div></td>
+                      <td><div class="px-3 fray-cell text-muted">{Number((frayResult.wins/frayResult.entered_battles) * 100).toFixed(2) }%</div></td>
+                    </tr>
+                  {/each}
+                </table>
+              </td>
+            </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
-<div id="guild-brawl-result" class="accordion-collapse collapse show">
-  <div class="table-responsive max-h-500 border border-primary">
-    <table class="table table-sm align-middle mb-0 table-fixed">
-      <thead>
-        <tr class="sticky-top bg-dark">
-          <th class="px-3 bg-dark">
-            <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#player-fray-result" aria-expanded="true" aria-controls="guild-brawl-result">
-              Display frays <span aria-hidden="true" class="dropdown-toggle"></span>
-            </button>
-          </th>
-          <th class="px-3 bg-dark">Wins</th>
-          <th class="px-3 bg-dark">Losses</th>
-          <th class="px-3 bg-dark">Draws</th>
-          <th class="px-3 bg-dark">Battles</th>
-          <!-- <th class="px-3 bg-dark">Participation</th> -->
-          <th class="px-3 bg-dark">Win rate</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each Object.entries(playerStat) as [player, stats]}
-        <tr>
-          <td class="text-nowrap sticky-left p-0">
-            <div class="py-1 px-3 bg-dark">
-              {player}
-            </div>
-          </td>
-          <td class="text-nowrap">
-            <div class="px-3">
-              {stats.wins}
-            </div>
-          </td>
-          <td class="text-nowrap">
-            <div class="px-3">
-              {stats.losses}
-            </div>
-          </td>
-          <td class="text-nowrap">
-            <div class="px-3">
-              {stats.draws}
-            </div>
-          </td>
-          <td class="text-nowrap">
-            <div class="px-3">
-              {stats.total_battles}
-            </div>
-          </td>
-          <!-- <td class="text-nowrap">
-            <div class="px-3">
-              {(Number(stats.entered_battles / stats.total_battles) * 100).toFixed() }%
-            </div>
-          </td> -->
-          <td class="text-nowrap">
-            <div class="px-3">
-              {Number((stats.wins/stats.entered_battles) * 100).toFixed(2) }%
-            </div>
-          </td>
-        </tr>
-        <tr  id="player-fray-result" class="accordion-collapse collapse">
-          <td colspan="6">
-            <table class="table table-sm mb-0 w-100 table-fixed">
-              {#each Object.entries(stats.frays) as [frayIndex, frayResult]}
-                <tr>
-                  <td>
-                    <div class="px-3 text-extra-small fray-cell text-muted">
-                      Fray {frayResult.fray_name}
-                    </div>
-                  </td>
-                  <td><div class="px-3 fray-cell text-muted">{frayResult.wins}</div></td>
-                  <td><div class="px-3 fray-cell text-muted">{frayResult.losses}</div></td>
-                  <td><div class="px-3 fray-cell text-muted">{frayResult.draws}</div></td>
-                  <td><div class="px-3 fray-cell text-muted">{frayResult.total_battles}</div></td>
-                  <td><div class="px-3 fray-cell text-muted">{Number((frayResult.wins/frayResult.entered_battles) * 100).toFixed(2) }%</div></td>
-                </tr>
-              {/each}
-            </table>
-          </td>
-        </tr>
-        {/each}
-      </tbody>
-    </table>
+
+<div class="accordion accordion-flush border border-primary mb-3">
+  <div class="accordion-item">
+    <div class="accordion-header" id="guild-bralw-results-heading">
+      <button class="accordion-button text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#guild-brawl-results" aria-expanded="true" aria-controls="guild-brawl-results">
+        <div class="h5">Previous Brawls</div>
+      </button>
+    </div>
+    <div id="guild-brawl-results" class="accordion-collapse collapse show">
+      <div class="table-responsive max-h-500 border border-primary">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead>
+            <tr class="bg-darker">
+              <th class="px-3">Cycle</th>
+              <th class="px-3">ID</th>
+              <th class="px-3 text-center">Tier</th>
+              <th class="px-3">Place</th>
+              <th class="px-3">Wins</th>
+              <th class="px-3">Losses</th>
+              <th class="px-3">Draws</th>
+              <th class="px-3">Crowns</th>
+              <th class="px-3">SPS</th>
+              <th class="px-3">Merits</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each brawlStat as brawl}
+              <tr role="button" data-bs-toggle="collapse" data-bs-target="#brawl-summary-{brawl.tournament_id}" aria-expanded="false">
+                <td>
+                  <div class="px-3">
+                    {brawl.cycle}
+                  </div>
+                </td>
+                <td><div class="px-3 text-nowrap small">{brawl.tournament_id}</div></td>
+                <td><div class="px-3 text-center"><GuildTiers level="{brawl.brawl_level}"/></div></td>
+                <td><div class="px-3">{brawl.brawl_rank}</div></td>
+                <td><div class="px-3">{brawl.wins}</div></td>
+                <td><div class="px-3">{brawl.losses}</div></td>
+                <td><div class="px-3">{brawl.draws}</div></td>
+                <td><div class="px-3"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(brawl.other_payout)}</div></td>
+                <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png" alt="SPS">{formatCompactNumber(brawl.member_sps_payout)}</div></td>
+                <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png" alt="Merrits">{formatCompactNumber(brawl.member_merits_payout)}</div></td>
+              </tr>
+              <tr  id="brawl-summary-{brawl.tournament_id}" class="accordion-collapse collapse">
+                <td colspan="10">
+                  <GuildBrawlResult tournament_id="{brawl.tournament_id}" guild_id="{$guildInfo.id}"/>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
 <style>
   .table-fixed {
     table-layout: fixed;
+    min-width: 1000px;
   }
 
   .text-extra-small {

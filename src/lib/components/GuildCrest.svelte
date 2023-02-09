@@ -24,7 +24,7 @@
   .guild-crest {
     display: inline-flex;
     justify-content: center;
-    background-size: contain;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     width: 30px;
     height: 30px;
@@ -37,12 +37,12 @@
   }
 
   .guild-crest--large {
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
   }
 
   .guild-crest--large .guild-crest__decal {
-    width: 70px;
-    height: 70px;
+    width: 150px;
+    height: 150px;
   }
 </style>

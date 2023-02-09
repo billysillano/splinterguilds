@@ -5,3 +5,4 @@ export const guildInfo = writable(null);
 export const guildMembers = writable([]);
 export const guildLoading = writable(false);
 export const guildOpponentInfo = writable(null);
+export const searchKey = writable('');
