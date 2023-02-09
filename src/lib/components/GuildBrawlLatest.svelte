@@ -4,12 +4,36 @@ import { onMount } from "svelte";
 import { guildInfo, guildOpponentInfo } from "../store/guilds";
 import { getGuildBrawlInfo} from "../services/guilds";
   import AppSpinner from "./AppSpinner.svelte";
-import { BRAWL_STATUS, LEAGUES } from "../constants";
+import { BRAWL_STATUS, LEAGUES, BRAWL_TIER, FRAYS } from "../constants";
 
 let ownGuild = null;
 let guildNames = {};
 let guilds = [];
 let loading =  false;
+
+const getFrayName = (fray_index, brawl_level) => {
+  const tier = BRAWL_TIER[brawl_level]?.tier || 0;
+  
+  if (!tier) return ''
+
+  const frays = FRAYS[tier];
+
+  const fray = frays[fray_index];
+  return fray;
+}
+
+const getCurrentBrawlStats = (id) => {
+  const stats = ownGuild.guilds.find(i => i.id === id);
+  return `
+    <div class="small">
+      <span class="text-success small me-2">${stats.wins} W</span>
+      <span class="text-danger small me-2">${stats.losses} L</span>
+      <span class="text-warning small me-2">${stats.draws} D</span>
+      <div class="text-muted small">${stats.pts} pts - ${stats.completed_battles}/${stats.total_battles}</div>
+    </div>
+  `;
+}
+
 onMount(async () => {
   loading = true;
   const data = JSON.parse($guildInfo.tournament_data);
@@ -19,6 +43,7 @@ onMount(async () => {
       tournament_id: $guildInfo.tournament_id,
       id: guildId,
     });
+
 
     if (guildId === $guildInfo.id) {
       ownGuild = {
@@ -44,10 +69,9 @@ onMount(async () => {
 const closeGuildOpponentInfo = () => $guildOpponentInfo = null;
 </script>
 
-<div class="accordion-header d-flex align-items-center py-2 px-3">
-  <div><strong>Current Brawl</strong> : {BRAWL_STATUS[$guildInfo.tournament_status]}</div>
-  <button class="btn btn-sm btn-primary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#guild-brawl-latest" aria-expanded="true" aria-controls="guild-brawl-result">
-    <span aria-hidden="true" class="dropdown-toggle"></span>
+<div class="accordion-header">
+  <button class="accordion-button text-light bg-dark"  data-bs-toggle="collapse" data-bs-target="#guild-brawl-latest" aria-expanded="true" aria-controls="guild-brawl-latest">
+    <div class="h5"><strong>Current Brawl</strong> : {BRAWL_STATUS[$guildInfo.tournament_status]}</div>
   </button>
 </div>
 <div id="guild-brawl-latest" class="accordion-collapse collapse show">
@@ -59,15 +83,17 @@ const closeGuildOpponentInfo = () => $guildOpponentInfo = null;
   {#if ownGuild && $guildInfo && !loading}
   <div class="table-responsive max-h-500 border border-primary">
     <table class="table table-sm align-middle mb-0">
-      <thead>
-        <tr class="sticky-top bg-dark">
-          <th class="text-nowrap sticky-left px-3 bg-dark">
-            {guildNames[ownGuild.guildId] || '--'}
+      <thead class="sticky-top bg-darker">
+        <tr>
+          <th class="text-nowrap px-3" style="min-width: 250px;">
+            <span class="text-info">{guildNames[ownGuild.guildId] || '--'}</span>
+            {@html getCurrentBrawlStats(ownGuild.guildId)}
           </th>
   
           {#each guilds as guild}
-            <th class="px-3 bg-dark text-nowrap">
-              {guildNames[guild.guildId] || '--'}
+            <th class="px-3 text-nowrap">
+              <span class="text-info">{guildNames[guild.guildId] || '--'}</span>
+              {@html getCurrentBrawlStats(guild.guildId)}
             </th>
           {/each}
         </tr>
@@ -75,16 +101,21 @@ const closeGuildOpponentInfo = () => $guildOpponentInfo = null;
       <tbody>
         {#each ownGuild.players as champion}
           <tr>
-            <td class="p-0 sticky-left">
-              <div class="py-1 px-3 d-flex flex-wrap text-nowrap bg-dark">
-                <span class="me-2">
+            <td class="p-0">
+              <div class="py-1 px-3 bg-dark">
+                <span class="me-2 text-nowrap text-info">
                   {champion.player}
                 </span>
-                <span class="ms-auto text-muted badge">
-                  <span class="text-success ms-1">{champion.wins} W</span>
-                  <span class="text-danger ms-1">{champion.losses} L</span>
-                  <span class="text-warning ms-1">{champion.draws} D</span>
-                </span>
+                <div class="text-muted badge d-flex text-nowrap">
+                  <span class="text-success me-2">{champion.wins} W</span>
+                  <span class="text-danger me-2">{champion.losses} L</span>
+                  <span class="text-warning me-2">{champion.draws} D</span>
+                </div>
+                <div class="small text-muted">
+                  <small>
+                    Fray {getFrayName(champion.fray_index, champion.brawl_level)}
+                  </small>
+                </div>
               </div>
             </td>
             {#each guilds as guild}

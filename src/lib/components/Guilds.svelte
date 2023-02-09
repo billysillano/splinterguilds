@@ -1,22 +1,11 @@
 <script>
   import { onMount } from "svelte";
   import { getGuildInfo, getGuildMembers, getGuilds } from "../services/guilds";
-  import { guilds, guildMembers, guildLoading, guildInfo } from "../store/guilds";
+  import { guilds, guildMembers, guildLoading, guildInfo, searchKey } from "../store/guilds";
   import GuildCrest from "./GuildCrest.svelte";
-
-  let searchKey = '';
-
-  const setUrl = (id) => {
-    const url = new URL(window.location.href);
-    const search_params = url.searchParams;
-
-    // new value of "id" is set to "101"
-    search_params.set('guild', id);
-
-    // change the search property of the main url
-    url.search = search_params.toString();
-    window.history.pushState("", "", url.search);
-  }
+  import GuildBuildings from "./GuildBuildings.svelte";
+  import { setUrl } from "../utils";
+  import GuildTiers from "./GuildTiers.svelte";
 
   onMount(async () => {
     $guildLoading = true;
@@ -28,7 +17,7 @@
     if(myParam) {
       await viewGuildMembers(myParam);
       
-      setUrl(myParam)
+      setUrl('guild', myParam);
     }
     
     $guildLoading = false;
@@ -38,8 +27,8 @@
     $guildLoading = true;
     $guildInfo = await getGuildInfo(id);
     $guildMembers = await getGuildMembers(id);
-    searchKey = $guildInfo.name;
-    setUrl(id);
+    $searchKey = $guildInfo.name;
+    setUrl('guild', id);
 
     $guildLoading = false;
 
@@ -53,18 +42,17 @@
 >
   <div class="d-flex justify-content-between align-items-end mb-2">
     <h1 class="h4 mb-0">Splinterlands Guilds</h1>
-    <input class="form-control-sm" type="text" placeholder="Search" bind:value={searchKey}>
+    <input class="form-control-sm" type="text" placeholder="Search" bind:value={$searchKey}>
   </div>
-  <div class="table-responsive max-h-500">
+  <div class="table-responsive bg-dark max-h-500">
     <table class="table table-hover align-middle mb-0">
-      <thead class="sticky-top bg-primary">
+      <thead class="sticky-top bg-darker">
         <tr>
+          <th><div class="px-3">Guilds</div></th>
           <th class="text-center">Rank</th>
-          <th class="sticky-left bg-primary text-center">Guilds</th>
-          <th></th>
-          <th class="text-center">Level</th>
+          <th class="text-center">Tier</th>
           <th class="text-center">Rating</th>
-          <!-- <th>Buildings</th> -->
+          <th class="text-center">Buildings</th>
           <th class="text-center">Members</th>
         </tr>
       </thead>
@@ -75,26 +63,25 @@
             on:click={() => viewGuildMembers(guild.id)}
             class:d-none={
               !String(guild.name).trim().toLowerCase()
-              .includes(searchKey.trim().toLowerCase())
+              .includes($searchKey.trim().toLowerCase())
             }
           >
+            <td class="text-nowrap">
+              <div class="px-3">
+                <GuildCrest data={guild.data}/>
+                {guild.name}
+              </div>
+            </td>
             <td class="text-center">
-              <span class="badge bg-primary">
-                {guild.rank}
-              </span>
+              {guild.rank}
             </td>
-            <td class="sticky-left text-center">
-              <GuildCrest data={guild.data}/>
+            <td class="text-center">
+              <GuildTiers level={guild.brawl_level}/>
             </td>
+            <td class="text-center">{(Number(guild.rating)/1000).toFixed(1)}K</td>
             <td>
-              {guild.name}
-              <div class="small text-muted">{guild.owner}</div>
-            </td>
-            <td class="text-center">{guild.level}</td>
-            <td class="text-center">{guild.rating}</td>
-            <!-- <td>
               <GuildBuildings buildings={guild.buildings}/>
-            </td> -->
+            </td>
             <td class="text-center">{guild.num_members}</td>
           </tr>
         {/each}
@@ -104,14 +91,6 @@
 </div>
 
 <style>
-  .table th:first-child {
-    width: 80px;
-  }
-
-  .table th:last-child {
-    width: 60px;
-  }
-
   .disabled {
     opacity: .5;
     pointer-events: none;

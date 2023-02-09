@@ -13,7 +13,7 @@
   } 
 </script>
 
-<main class="bg-dar pt-3 text-body">
+<main class="bg-primary pt-3 text-body min-vh-100 font-monospace">
   <div class="container">
     <Guilds/>
     
