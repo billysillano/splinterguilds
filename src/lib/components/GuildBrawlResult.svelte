@@ -1,18 +1,7 @@
 <script>
-  import { getGuildBrawlInfo } from "../services/guilds";
   import {formatCompactNumber} from '../utils';
-  import { onMount } from "svelte";
 
-  export let tournament_id;
-  export let guild_id;
-
-  let results = [];
-
-  onMount(async () => {
-    const info = await getGuildBrawlInfo({tournament_id: tournament_id, id: guild_id});
-
-    results = info.guilds;
-  })
+  export let results;
 </script>
 
 <div class="p-3 bg-dark">

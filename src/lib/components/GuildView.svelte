@@ -3,11 +3,12 @@
   import GuildMembers from './GuildMembers.svelte';
   import GuildBuildings from './GuildBuildings.svelte';
   import GuildCrest from "./GuildCrest.svelte";
-    import GuildBrawlStats from "./GuildBrawlStats.svelte";
+  import GuildBrawlStats from "./GuildBrawlStats.svelte";
   import GuildBrawlLatest from "./GuildBrawlLatest.svelte";
-    import { BRAWL_STATUS } from "../constants";
+  import { BRAWL_STATUS } from "../constants";
   import { formatCompactNumber, setUrl } from "../utils";
-    import GuildTiers from "./GuildTiers.svelte";
+  import GuildTiers from "./GuildTiers.svelte";
+  import GuildPastBrawls from "./GuildPastBrawls.svelte";
 
   const handleCloseMembers = () => {
     $guildMembers = [];
@@ -57,7 +58,7 @@
     <div class="accordion-item">
       <div class="accordion-header">
         <button class="accordion-button text-light bg-dark"  data-bs-toggle="collapse" data-bs-target="#guild-members" aria-expanded="true" aria-controls="guild-members">
-          <div class="h5">Members <span class="mx-3 badge bg-primary"><span class="text-muted">total </span>{$guildInfo.num_members}</span></div> 
+          <div class="h5 mb-0">Members <span class="mx-3 badge bg-primary"><span class="text-muted">total </span>{$guildInfo.num_members}</span></div> 
         </button>
       </div>
       <div id="guild-members" class="accordion-collapse collapse show">
@@ -66,8 +67,11 @@
     </div>
     {/if}
   </div>
+
   
   <GuildBrawlStats/>
+
+  <GuildPastBrawls/>
 
   <div class="accordion accordion-flush  mb-3">
     <div class="accordion-item">

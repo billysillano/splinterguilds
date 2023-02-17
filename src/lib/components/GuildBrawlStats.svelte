@@ -1,10 +1,8 @@
 <script>
   import { guildInfo } from "../store/guilds";
   import { getGuildBrawlInfo } from "../services/guilds";
-    import { BRAWL_TIER, FRAYS, } from "../constants";
-    import { formatCompactNumber } from "../utils";
-    import GuildBrawlResult from "./GuildBrawlResult.svelte";
-    import GuildTiers from "./GuildTiers.svelte";
+  import { BRAWL_TIER, FRAYS, } from "../constants";
+
   let playerStat = {};
   let guildStats = {
     brawl_rank: 0,
@@ -217,61 +215,6 @@
                 </table>
               </td>
             </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="accordion accordion-flush border border-primary mb-3">
-  <div class="accordion-item">
-    <div class="accordion-header" id="guild-bralw-results-heading">
-      <button class="accordion-button text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#guild-brawl-results" aria-expanded="true" aria-controls="guild-brawl-results">
-        <div class="h5">Previous Brawls</div>
-      </button>
-    </div>
-    <div id="guild-brawl-results" class="accordion-collapse collapse show">
-      <div class="table-responsive max-h-500 border border-primary">
-        <table class="table table-sm table-hover align-middle mb-0">
-          <thead>
-            <tr class="bg-darker">
-              <th class="px-3">Cycle</th>
-              <th class="px-3">ID</th>
-              <th class="px-3 text-center">Tier</th>
-              <th class="px-3">Place</th>
-              <th class="px-3">Wins</th>
-              <th class="px-3">Losses</th>
-              <th class="px-3">Draws</th>
-              <th class="px-3">Crowns</th>
-              <th class="px-3">SPS</th>
-              <th class="px-3">Merits</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each brawlStat as brawl}
-              <tr role="button" data-bs-toggle="collapse" data-bs-target="#brawl-summary-{brawl.tournament_id}" aria-expanded="false">
-                <td>
-                  <div class="px-3">
-                    {brawl.cycle}
-                  </div>
-                </td>
-                <td><div class="px-3 text-nowrap small">{brawl.tournament_id}</div></td>
-                <td><div class="px-3 text-center"><GuildTiers level="{brawl.brawl_level}"/></div></td>
-                <td><div class="px-3">{brawl.brawl_rank}</div></td>
-                <td><div class="px-3">{brawl.wins}</div></td>
-                <td><div class="px-3">{brawl.losses}</div></td>
-                <td><div class="px-3">{brawl.draws}</div></td>
-                <td><div class="px-3"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(brawl.other_payout)}</div></td>
-                <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png" alt="SPS">{formatCompactNumber(brawl.member_sps_payout)}</div></td>
-                <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png" alt="Merrits">{formatCompactNumber(brawl.member_merits_payout)}</div></td>
-              </tr>
-              <tr  id="brawl-summary-{brawl.tournament_id}" class="accordion-collapse collapse">
-                <td colspan="10">
-                  <GuildBrawlResult tournament_id="{brawl.tournament_id}" guild_id="{$guildInfo.id}"/>
-                </td>
-              </tr>
             {/each}
           </tbody>
         </table>
