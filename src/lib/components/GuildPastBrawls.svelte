@@ -49,7 +49,7 @@
       guildStats.wins += result.wins
     });
 
-    guildStats.brawl_rank = Math.round(guildStats.brawl_rank/brawls.length)
+    guildStats.brawl_rank = Math.round(guildStats.brawl_rank/records.length)
     guildStats.win_rate = Math.round((guildStats.wins / guildStats.battles) * 100)
 
     const players = {};
