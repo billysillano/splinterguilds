@@ -1,9 +1,14 @@
 <script>
+    import { onMount } from 'svelte';
   import {formatCompactNumber} from '../utils';
 
-  export let results;
+  export let brawl;
+  let results = [];
+  onMount(() => {
+    results = brawl.brawl_info?.guilds || [];
+  })
 </script>
-
+{#if (results && results.length)} 
 <div class="p-3 bg-dark">
   <table class="table table-sm small">
     <thead class="bg-darker">
@@ -34,4 +39,5 @@
     </tbody>
   </table>
 </div>
+{/if}
 
