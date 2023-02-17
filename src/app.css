@@ -28,3 +28,7 @@ th {
 .bg-darker {
   background-color: #1e1f21 !important;
 }
+
+input[type="number"] {
+  appearance: none;
+}

@@ -65,6 +65,12 @@ export const getPlayerInfo = async (name) => {
   return details;
 }
 
+export const getGuildBrawlRecords = async (guildId, cycleStart, cycleEnd) => {
+  const res = await fetch(`${GAME_API_URL}/guilds/brawl_records?guild_id=${guildId}&start_cycle=${cycleStart}&end_cycle=${cycleEnd}`);
+  const details= await res.json();
+  return details.results || [];
+}
+
 // export const getGuildBrawlMatchup = async ({tournament_id, name, user}) => {
 //   const res = await fetch(`${API2_URL}/tournaments/battles?id=${tournament_id}&round=1&player=${name}&token=${user.token}&username=${name}`);
 //   const result = await res.json();
