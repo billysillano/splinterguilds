@@ -31,8 +31,7 @@
       return;
     }
 
-    brawls = await getGuildBrawlRecords(guildId, start, end);
-
+    const records = await getGuildBrawlRecords(guildId, start, end);
     guildStats = {
       brawl_rank: 0,
       battles: 0,
@@ -44,7 +43,7 @@
 
     playerStats = {};
 
-    brawls.forEach(result => {
+    records.forEach(result => {
       guildStats.brawl_rank += result.brawl_rank
       guildStats.battles += (result.draws + result.losses + result.wins)
       guildStats.wins += result.wins
@@ -55,7 +54,7 @@
 
     const players = {};
 
-    for await (let stat of brawls) {
+    for (let stat of records) {
       const result = await getGuildBrawlInfo({tournament_id: stat.tournament_id, id: stat.guild_id});
       stat.brawl_info = result;
 
@@ -119,12 +118,13 @@
 
         return res;
       }, null);
-
     }
+
+    brawls = records;
   }
 
   onMount(async () => {
-    getData();
+    await getData();
   })
 </script>
 
@@ -190,9 +190,10 @@
                 <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png" alt="SPS">{formatCompactNumber(brawl.member_sps_payout)}</div></td>
                 <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png" alt="Merrits">{formatCompactNumber(brawl.member_merits_payout)}</div></td>
               </tr>
+              
               <tr  id="brawl-summary-{brawl.tournament_id}" class="accordion-collapse collapse">
                 <td colspan="10">
-                  <GuildBrawlResult results="{brawls}"/>
+                  <GuildBrawlResult brawl="{brawl}"/>
                 </td>
               </tr>
             {/each}
