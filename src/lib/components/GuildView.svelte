@@ -73,7 +73,7 @@
 
   <GuildPastBrawls/>
 
-  <!-- <div class="accordion accordion-flush  mb-3">
+  <div class="accordion accordion-flush  mb-3">
     <div class="accordion-item">
       {#if ($guildInfo.tournament_status)}
       <GuildBrawlLatest/>
@@ -83,6 +83,6 @@
         <div class="h1 text-center">No participation</div>
       {/if}
     </div>
-  </div> -->
+  </div>
 </div>
 {/if}
