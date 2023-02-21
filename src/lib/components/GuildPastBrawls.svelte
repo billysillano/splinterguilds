@@ -104,7 +104,8 @@
             meta_pts: 0,
             total_battles: 0,
             wins: 0,
-            frays:{}
+            frays:{},
+            player,
            };
            playerStats[player] = res
         }
@@ -118,9 +119,65 @@
 
         return res;
       }, null);
+
+      playerStats[player].win_rate = Number((playerStats[player].wins/playerStats[player].entered_battles) * 100).toFixed(2);
     }
 
     brawls = records;
+  }
+
+  function sortBrawlsHandler(e, key) {
+    const tableMembers = document.getElementById('table-past-brawls');
+    const order = e.target.dataset.order === 'desc' ? 'asc' : 'desc';
+    
+    const sortable  = brawls.sort((a, b) => {
+      if (isNaN(a[key])) {
+        if (order === 'asc') {
+          return b[key].localeCompare(a[key]);
+        } else {
+          return a[key].localeCompare(b[key]);
+        }
+      }
+
+      if (order === 'asc') {
+        return b[key] - a[key]
+      } else {
+        return a[key] - b[key]
+      }
+    });
+
+    brawls = [...sortable];
+
+    tableMembers.querySelectorAll('th').forEach(i => i.dataset.order = '');
+    e.target.dataset.order = order;
+  }
+
+  function sortGuildMembersHandler(e, key) {
+    const tableMembers = document.getElementById('table-past-brawls-members');
+    const order = e.target.dataset.order === 'desc' ? 'asc' : 'desc';
+    
+    const sortable  = Object.entries(playerStats)
+      .sort(([,a], [,b]) => {
+        if (isNaN(a[key])) {
+          if (order === 'asc') {
+            return b[key].localeCompare(a[key]);
+          } else {
+            return a[key].localeCompare(b[key]);
+          }
+        }
+
+        if (order === 'asc') {
+          return b[key] - a[key]
+        } else {
+          return a[key] - b[key]
+        }
+      })
+      .reduce((r, [k, v]) => ({...r, [k]: v}), {});
+
+    playerStats = sortable;
+
+    tableMembers.querySelectorAll('th').forEach(i => i.dataset.order = '');
+    e.target.dataset.order = order;
   }
 
   onMount(async () => {
@@ -157,27 +214,30 @@
 
       <!-- brawls -->
       <div class="table-responsive max-h-500 border border-primary">
-        <table class="table table-sm table-hover align-middle mb-0">
+        <table id="table-past-brawls" class="table table-sm table-hover align-middle mb-0">
           <thead>
             <tr class="bg-darker">
-              <th class="px-3">Cycle</th>
-              <th class="px-3">ID</th>
-              <th class="px-3 text-center">Tier</th>
-              <th class="px-3">Place</th>
-              <th class="px-3">Wins</th>
-              <th class="px-3">Losses</th>
-              <th class="px-3">Draws</th>
-              <th class="px-3">Crowns</th>
-              <th class="px-3">SPS</th>
-              <th class="px-3">Merits</th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'cycle')}">Cycle <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'tournament_id')}">ID <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap text-center" role="button" on:click="{(e) => sortBrawlsHandler(e, 'brawl_level')}">Tier <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'brawl_rank')}">Place <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'wins')}">Wins <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'losses')}">Losses <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'draws')}">Draws <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'other_payout')}">Crowns <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'member_sps_payout')}">SPS <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'member_merits_payout')}">Merits <span class="ms-2">&#8597;</span></th>
             </tr>
           </thead>
           <tbody>
             {#each brawls as brawl}
-              <tr role="button" data-bs-toggle="collapse" data-bs-target="#brawl-summary-{brawl.tournament_id}" aria-expanded="false">
+              <tr role="button" data-bs-toggle="collapse" data-bs-target="#brawl-summary-{brawl.tournament_id}" aria-expanded="false" class="collapsed">
                 <td>
                   <div class="px-3">
-                    {brawl.cycle}
+                    <span class="me-2 arrow small">&#11166;</span>
+                    <span class="text-info">
+                      {brawl.cycle}
+                    </span>
                   </div>
                 </td>
                 <td><div class="px-3 text-nowrap small">{brawl.tournament_id}</div></td>
@@ -202,24 +262,25 @@
       </div>
 
       <!-- players -->
-      <div id="player-brawl-result" class="accordion-collapse collapse show">
+      <div id="player-brawl-result" class="accordion-collapse collapse show mt-4">
+        <div class="px-3 mb-3 h5">Members</div>
         <div class="table-responsive max-h-500 border border-primary">
-          <table class="table table-sm align-middle table-fixed mb-0">
+          <table id="table-past-brawls-members" class="table table-sm align-middle table-fixed mb-0">
             <thead>
               <tr class="sticky-top bg-darker">
-                <th class="px-3">Members</th>
-                <th class="px-3">Wins</th>
-                <th class="px-3">Losses</th>
-                <th class="px-3">Draws</th>
-                <th class="px-3">Battles</th>
-                <th class="px-3 text-nowrap">Win rate</th>
+                <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'player')}">IGN  <span class="ms-2">&#8597;</span></th>
+                <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'wins')}">Wins  <span class="ms-2">&#8597;</span></th>
+                <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'losses')}">Losses  <span class="ms-2">&#8597;</span></th>
+                <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'draws')}">Draws  <span class="ms-2">&#8597;</span></th>
+                <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'total_battles')}">Battles  <span class="ms-2">&#8597;</span></th>
+                <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'win_rate')}">Win rate  <span class="ms-2">&#8597;</span></th>
               </tr>
             </thead>
             <tbody>
               {#each Object.entries(playerStats) as [player, stats], playerIndex}
               <tr>
                 <td class="text-nowrap">
-                  <div class="px-3 text-info">
+                  <div class="px-3">
                     {player}
                   </div>
                 </td>
@@ -245,7 +306,7 @@
                 </td>
                 <td class="text-nowrap">
                   <div class="px-3">
-                    {Number((stats.wins/stats.entered_battles) * 100).toFixed(2) }%
+                    {stats.win_rate}%
                   </div>
                 </td>
               </tr>

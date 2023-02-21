@@ -77,6 +77,7 @@
 
     for(const player in stats) {
       if (!playerStat[player]) playerStat[player] = {};
+      
       stats[player].reduce(function(res, value) {
         // const fray_index = value.fray_index;
         if (!res) {
@@ -88,7 +89,9 @@
             meta_pts: 0,
             total_battles: 0,
             wins: 0,
-            frays:{}
+            win_rate: 0,
+            frays:{},
+            player,
            };
           playerStat[player] = res
         }
@@ -124,9 +127,40 @@
           
         return res;
       }, null);
-
+      
+      playerStat[player].win_rate = Number((playerStat[player].wins/playerStat[player].entered_battles) * 100).toFixed(2);
     }
   }
+
+  function sortHandler(e, key) {
+    const tableMembers = document.getElementById('table-brawl-stats');
+    const order = e.target.dataset.order === 'desc' ? 'asc' : 'desc';
+    
+    const sortable  = Object.entries(playerStat)
+      .sort(([,a], [,b]) => {
+        if (isNaN(a[key])) {
+          if (order === 'asc') {
+            return b[key].localeCompare(a[key]);
+          } else {
+            return a[key].localeCompare(b[key]);
+          }
+        }
+
+        if (order === 'asc') {
+          return b[key] - a[key]
+        } else {
+          return a[key] - b[key]
+        }
+      })
+      .reduce((r, [k, v]) => ({...r, [k]: v}), {});
+
+    playerStat = sortable;
+
+    tableMembers.querySelectorAll('th').forEach(i => i.dataset.order = '');
+    e.target.dataset.order = order;
+  }
+
+
   init()
 </script>
 <div class="accordion accordion-flush mb-3">
@@ -145,22 +179,23 @@
     </div>
     <div id="player-brawl-result" class="accordion-collapse collapse show">
       <div class="table-responsive max-h-500 border border-primary">
-        <table class="table table-hover table-sm align-middle table-fixed mb-0">
+        <table id="table-brawl-stats" class="table table-hover table-sm align-middle table-fixed mb-0">
           <thead>
             <tr class="sticky-top bg-darker">
-              <th class="px-3"></th>
-              <th class="px-3">Wins</th>
-              <th class="px-3">Losses</th>
-              <th class="px-3">Draws</th>
-              <th class="px-3">Battles</th>
-              <th class="px-3 text-nowrap">Win rate</th>
+              <th class="px-3  text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'player')}">IGN <span class="ms-2">&#8597;</span></th>
+              <th class="px-3  text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'wins')}">Wins<span class="ms-2">&#8597;</span></th>
+              <th class="px-3  text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'losses')}">Losses<span class="ms-2">&#8597;</span></th>
+              <th class="px-3  text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'draws')}">Draws<span class="ms-2">&#8597;</span></th>
+              <th class="px-3  text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'total_battles')}">Battles<span class="ms-2">&#8597;</span></th>
+              <th class="px-3  text-nowrap" on:click="{(e) => sortHandler(e, 'win_rate')}">Win rate<span class="ms-2">&#8597;</span></th>
             </tr>
           </thead>
           <tbody>
             {#each Object.entries(playerStat) as [player, stats], playerIndex}
-            <tr role="button" data-bs-toggle="collapse" data-bs-target="#player-fray-result-{playerIndex}" aria-expanded="false">
+            <tr role="button" data-bs-toggle="collapse" data-bs-target="#player-fray-result-{playerIndex}" aria-expanded="false" class="collapsed">
               <td class="text-nowrap">
                 <div class="px-3 text-info">
+                  <span class="me-2 arrow small">&#11166;</span>
                   {player}
                 </div>
               </td>
@@ -191,7 +226,7 @@
               </td> -->
               <td class="text-nowrap">
                 <div class="px-3">
-                  {Number((stats.wins/stats.entered_battles) * 100).toFixed(2) }%
+                  {stats.win_rate}%
                 </div>
               </td>
             </tr>

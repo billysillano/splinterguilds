@@ -2,16 +2,45 @@
   import { LEAGUES } from "../constants";
   import { guildMembers } from "../store/guilds";
   import { formatCompactNumber } from "../utils";
+  
+
+  function sortHandler(e, key) {
+    const tableMembers = document.getElementById('table-members');
+    const order = e.target.dataset.order === 'desc' ? 'asc' : 'desc';
+    
+    const sortable  = $guildMembers.sort((a, b) => {
+      if (isNaN(a[key])) {
+        if (order === 'asc') {
+          return b[key].localeCompare(a[key]);
+        } else {
+          return a[key].localeCompare(b[key]);
+        }
+      }
+
+      if (order === 'asc') {
+        return b[key] - a[key]
+      } else {
+        return a[key] - b[key]
+      }
+    });
+
+    $guildMembers = [...sortable];
+
+    tableMembers.querySelectorAll('th').forEach(i => i.dataset.order = '');
+    e.target.dataset.order = order;
+  }
 </script>
 <div class="table-responsive max-h-500 border border-primary">
-  <table class="table table-sm align-middle mb-0">
+  <table id="table-members" class="table table-sm align-middle mb-0">
     <thead class="sticky-top bg-darker">
       <tr>
-        <th class="px-3">IGN</th>
-        <th class="px-3 text-center">CP</th>
-        <th class="px-3 text-center">Modern</th>
-        <th class="px-3 text-center">Wild</th>
-        <th class="px-3">Contributed</th>
+        <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'player')}">IGN <span class="ms-2">&#8597;</span></th>
+        <th class="px-3 text-nowrap text-center" role="button" on:click="{(e) => sortHandler(e, 'collection_power')}">CP <span class="ms-2">&#8597;</span></th>
+        <th class="px-3 text-nowrap text-center" role="button" on:click="{(e) => sortHandler(e, 'modern_rating')}">Modern <span class="ms-2">&#8597;</span></th>
+        <th class="px-3 text-nowrap text-center" role="button" on:click="{(e) => sortHandler(e, 'rating')}">Wild <span class="ms-2">&#8597;</span></th>
+        <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'crowns')}">Crown <span class="ms-2">&#8597;</span></th>
+        <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'dec')}">DEC <span class="ms-2">&#8597;</span></th>
+        <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortHandler(e, 'quest_lodge')}">Quest <span class="ms-2">&#8597;</span></th>
       </tr>
     </thead>
     <tbody>
@@ -42,19 +71,21 @@
           </td>
           
           <td>
-            <div class="px-3 font-monospace me-3 me-2 text-nowrap">
-              {#if (member.dec)}
-              <img width="25px"src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_dec.png" alt="DEC">
-                {formatCompactNumber(member.dec)}
-              {/if}
-              {#if (member.quest_lodge)}
-              <img width="25px" class="ms-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_quest_150.png" alt="Quest">
-                {formatCompactNumber(member.quest_lodge)}
-              {/if}
-              {#if (member.crowns)}
+            <div class="px-3 font-monospace text-nowrap">
               <img width="25px"  class="ms-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">
-                {formatCompactNumber(member.crowns)}
-              {/if}
+              {member.crowns ? formatCompactNumber(member.crowns) : 0}
+            </div>
+          </td>
+          <td>
+            <div class="px-3 font-monospace text-nowrap">
+              <img width="25px"src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_dec.png" alt="DEC">
+              {member.dec ? formatCompactNumber(member.dec) : 0}
+            </div>
+          </td>
+          <td>
+            <div class="px-3 font-monospace text-nowrap">
+              <img width="25px" class="ms-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_quest_150.png" alt="Quest">
+              {member.quest_lodge ? formatCompactNumber(member.quest_lodge) : 0}
             </div>
           </td>
         </tr>

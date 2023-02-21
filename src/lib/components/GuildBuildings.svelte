@@ -3,7 +3,7 @@
   const guildBuildings = JSON.parse(buildings);
 </script>
 
-<div class="h5 d-flex flex-wrap">
+<div class="h5 d-flex justify-content-center">
   <div class="me-2 text-nowrap badge bg-primary">
     <span class="text-muted me-2">Hall</span>
     {guildBuildings.guild_hall.level}

@@ -32,3 +32,8 @@ th {
 input[type="number"] {
   appearance: none;
 }
+
+tr:not(.collapsed) .arrow {
+  transform: rotate(90deg);
+  display: inline-block;
+}

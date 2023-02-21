@@ -42,9 +42,6 @@
           <span class="me-2">Rank: <strong class="text-info">{$guildInfo.rank}</strong></span>
           <span>Rating: &nbsp;<strong class="text-info">{formatCompactNumber($guildInfo.rating)}</strong></span>
         </div>
-        <div class="mb-2">
-          <GuildBuildings buildings={$guildInfo.buildings} />
-        </div>
         
         {#if $guildInfo.description}
           <div class=" small">{$guildInfo.description}</div>
