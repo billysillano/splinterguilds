@@ -7,6 +7,8 @@
   import { setUrl } from "../utils";
   import GuildTiers from "./GuildTiers.svelte";
 
+  let filteredList = [];
+
   onMount(async () => {
     $guildLoading = true;
     const guildsList = await getGuilds();
@@ -20,8 +22,14 @@
       setUrl('guild', myParam);
     }
     
+    setFilterList();
     $guildLoading = false;
   })
+
+  const setFilterList = ()=>{
+    filteredList = $guilds.filter(i => String(i.name).trim().toLowerCase()
+              .includes($searchKey.trim().toLowerCase()));
+  }
 
   const viewGuildMembers = async (id) => {
     $guildLoading = true;
@@ -33,22 +41,22 @@
     $guildLoading = false;
 
   }
-  
 </script>
 
 <div
   class="mb-5"
   class:disabled={$guildLoading}
 >
-  <div class="d-flex justify-content-between align-items-end mb-2">
+  <div class="d-flex justify-content-between align-items-center mb-2">
     <h1 class="h4 mb-0">Splinterlands Guilds</h1>
-    <input class="form-control-sm" type="text" placeholder="Search" bind:value={$searchKey}>
+    <label for="" class="ms-auto me-2">Search guild name:</label>
+    <input class="form-control-sm" type="text" placeholder="Search" bind:value={$searchKey} on:input="{() => setFilterList()}">
   </div>
   <div class="table-responsive bg-dark max-h-500">
-    <table class="table table-hover align-middle mb-0">
+    <table id="table-guilds" class="table table-hover align-middle mb-0">
       <thead class="sticky-top bg-darker">
         <tr>
-          <th><div class="px-3">Guilds</div></th>
+          <th><div class="px-3">{filteredList.length} Guilds</div></th>
           <th class="text-center">Rank</th>
           <th class="text-center">Tier</th>
           <th class="text-center">Rating</th>
@@ -79,7 +87,7 @@
               <GuildTiers level={guild.brawl_level}/>
             </td>
             <td class="text-center">{(Number(guild.rating)/1000).toFixed(1)}K</td>
-            <td>
+            <td class="text-nowrap">
               <GuildBuildings buildings={guild.buildings}/>
             </td>
             <td class="text-center">{guild.num_members}</td>
