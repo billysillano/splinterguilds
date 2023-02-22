@@ -6,8 +6,11 @@
   import GuildBrawlResult from "./GuildBrawlResult.svelte";
   import { formatCompactNumber } from "../utils";
   import { getGuildBrawlInfo } from "../services/guilds";
+    import AppSpinner from "./AppSpinner.svelte";
   
 
+  let loading = false;
+  let dataIsLoaded = false;
   let brawls = [];
   let playerStats = {};
   let inputCycleStart = '';
@@ -23,14 +26,18 @@
 
   const getData = async () => {
     const guildId = $guildInfo.id;
-    const start = inputCycleStart || $guildInfo.brawl_stats.start_cycle;
-    const end = inputCycleEnd || $guildInfo.brawl_stats.end_cycle;
+    const start = inputCycleStart;
+    const end = inputCycleEnd;
 
     if (Number(end) < Number(start)) {
       alert('Invalid cycle from or cycle to value');
       return;
     }
 
+    dataIsLoaded = true;
+    loading = true;
+    
+    
     const records = await getGuildBrawlRecords(guildId, start, end);
     guildStats = {
       brawl_rank: 0,
@@ -54,7 +61,7 @@
 
     const players = {};
 
-    for (let stat of records) {
+    for await (let stat of records) {
       const result = await getGuildBrawlInfo({tournament_id: stat.tournament_id, id: stat.guild_id});
       stat.brawl_info = result;
 
@@ -124,6 +131,8 @@
     }
 
     brawls = records;
+
+    loading = false;
   }
 
   function sortBrawlsHandler(e, key) {
@@ -179,28 +188,27 @@
     tableMembers.querySelectorAll('th').forEach(i => i.dataset.order = '');
     e.target.dataset.order = order;
   }
-
-  onMount(async () => {
-    await getData();
-  })
 </script>
 
 <div class="accordion accordion-flush border border-primary mb-3">
   <div class="accordion-item">
     <div class="accordion-header" id="brawl-cycle-heading">
-      <button class="accordion-button text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#brawl-cycle" aria-expanded="true" aria-controls="guild-brawl-results">
-        <div class="d-flex flex-wrap">
-          <div class="h5 mb-0">Past brawls
-            <span class="ms-3 badge bg-primary"><span class="text-muted">Ave placement:</span> {guildStats.brawl_rank}</span>
-            <span class="ms-3 badge bg-primary"><span class="text-muted">Wins:</span>  {guildStats.wins}</span>
-            <span class="ms-3 badge bg-primary"><span class="text-muted">Battles:</span> {guildStats.battles}</span>
-            <span class="ms-3 badge bg-primary"><span class="text-muted">Win rate:</span>  {guildStats.win_rate}%</span>
-          </div>
+      <button class="accordion-button mb-0 text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#brawl-cycle" aria-expanded="true" aria-controls="guild-brawl-results">
+        <div class="d-flex flex-wrap h5 mb-0">
+          <div class="text-nowrap">Past brawls</div>
+
+          {#if brawls.length}
+          <span class="ms-3 badge bg-primary"><span class="text-muted">Ave placement:</span> {guildStats.brawl_rank}</span>
+          <span class="ms-3 badge bg-primary"><span class="text-muted">Wins:</span>  {guildStats.wins}</span>
+          <span class="ms-3 badge bg-primary"><span class="text-muted">Battles:</span> {guildStats.battles}</span>
+          <span class="ms-3 badge bg-primary"><span class="text-muted">Win rate:</span>  {guildStats.win_rate}%</span>
+          {/if}
         </div>
       </button>
     </div>
     <div id="brawl-cycle" class="accordion-collapse collapse show">
-      <div class="d-flex justify-content-end align-items-center px-3 mb-3">
+      <p class="px-3 small">Enter the cycle range that you want to view (recommended) or click apply to get all (slow).</p>
+      <div class="d-flex justify-content-end align-items-center px-3 pb-3">
         <strong class="mb-0 me-3">Cycle</strong>
         <div class="me-2 d-flex align-items-center">
           <input id="cycleStart" type="number" class="form-control form-control-sm bg-dark text-light" placeholder="From"  bind:value={inputCycleStart}>
@@ -211,9 +219,16 @@
 
         <button class="btn btn-sm btn-primary" on:click={getData}>Apply</button>
       </div>
+      {#if dataIsLoaded}
+      {#if loading}
+      <div class="text-center small pb-4">
+        <AppSpinner/>
+      </div>
+      {/if}
 
       <!-- brawls -->
-      <div class="table-responsive max-h-500 border border-primary">
+      {#if brawls.length}
+      <div class="table-responsive max-h-500 border border-primary   {loading && 'd-none'}">
         <table id="table-past-brawls" class="table table-sm table-hover align-middle mb-0">
           <thead>
             <tr class="bg-darker">
@@ -241,29 +256,34 @@
                   </div>
                 </td>
                 <td><div class="px-3 text-nowrap small">{brawl.tournament_id}</div></td>
-                <td><div class="px-3 text-center"><GuildTiers level="{brawl.brawl_level}"/></div></td>
-                <td><div class="px-3">{brawl.brawl_rank}</div></td>
-                <td><div class="px-3">{brawl.wins}</div></td>
-                <td><div class="px-3">{brawl.losses}</div></td>
-                <td><div class="px-3">{brawl.draws}</div></td>
-                <td><div class="px-3"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(brawl.other_payout)}</div></td>
-                <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png" alt="SPS">{formatCompactNumber(brawl.member_sps_payout)}</div></td>
-                <td><div class="px-3"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png" alt="Merrits">{formatCompactNumber(brawl.member_merits_payout)}</div></td>
+                <td><div class="px-3 text-nowrap text-center"><GuildTiers level="{brawl.brawl_level}"/></div></td>
+                <td><div class="px-3 text-nowrap">{brawl.brawl_rank}</div></td>
+                <td><div class="px-3 text-nowrap">{brawl.wins}</div></td>
+                <td><div class="px-3 text-nowrap">{brawl.losses}</div></td>
+                <td><div class="px-3 text-nowrap">{brawl.draws}</div></td>
+                <td><div class="px-3 text-nowrap"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(brawl.other_payout)}</div></td>
+                <td><div class="px-3 text-nowrap"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png" alt="SPS">{formatCompactNumber(brawl.member_sps_payout)}</div></td>
+                <td><div class="px-3 text-nowrap"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png" alt="Merrits">{formatCompactNumber(brawl.member_merits_payout)}</div></td>
               </tr>
               
               <tr  id="brawl-summary-{brawl.tournament_id}" class="accordion-collapse collapse">
                 <td colspan="10">
-                  <GuildBrawlResult brawl="{brawl}"/>
+                  <GuildBrawlResult brawl="{ brawl.brawl_info?.guilds || []}"/>
                 </td>
               </tr>
             {/each}
           </tbody>
         </table>
       </div>
+      {:else if !loading}
+        <p class="text-center  p-3">No record found</p>
+      {/if}
 
       <!-- players -->
-      <div id="player-brawl-result" class="accordion-collapse collapse show mt-4">
+      <div id="player-brawl-result" class="accordion-collapse collapse show mt-4  {loading && 'd-none'}">
         <div class="px-3 mb-3 h5">Members</div>
+        {#if Object.entries(playerStats).length}
+        
         <div class="table-responsive max-h-500 border border-primary">
           <table id="table-past-brawls-members" class="table table-sm align-middle table-fixed mb-0">
             <thead>
@@ -314,7 +334,11 @@
             </tbody>
           </table>
         </div>
+        {:else if !loading}
+          <p class="text-center p-3">No record found</p>
+        {/if}
       </div>
+      {/if}
     </div>
   </div>  
 </div>  

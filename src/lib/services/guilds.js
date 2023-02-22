@@ -13,7 +13,7 @@ export const getGuildInfo = async (id) => {
 }
 
 export const getGuildMembers = async (id) => {
-  const res = await fetch(`${GAME_API_URL}/guilds/members?guild_id=${id}&status=active`);
+  const res = await fetch(`${API2_URL}/guilds/members?guild_id=${id}&status=active`);
   const members = await res.json();
   if (!members) return [];
 
@@ -60,13 +60,19 @@ export const getGuildBrawlInfo = async ({tournament_id, id}) => {
 }
 
 export const getPlayerInfo = async (name) => {
-  const res = await fetch(`${GAME_API_URL}/players/details?name=${name}`);
+  const res = await fetch(`${API2_URL}/players/details?name=${name}`);
   const details= await res.json();
   return details;
 }
 
 export const getGuildBrawlRecords = async (guildId, cycleStart, cycleEnd) => {
-  const res = await fetch(`${GAME_API_URL}/guilds/brawl_records?guild_id=${guildId}&start_cycle=${cycleStart}&end_cycle=${cycleEnd}`);
+  const res = await fetch(`${API2_URL}/guilds/brawl_records?guild_id=${guildId}&start_cycle=${cycleStart}&end_cycle=${cycleEnd}`);
+  const details= await res.json();
+  return details.results || [];
+}
+
+export const getGuildBrawlByTournament = async (tournament_id) => {
+  const res = await fetch(`${API2_URL}/guilds/brawl_records?tournament_id=${tournament_id}`);
   const details= await res.json();
   return details.results || [];
 }

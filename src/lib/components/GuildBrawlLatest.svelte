@@ -24,12 +24,13 @@ const getFrayName = (fray_index, brawl_level) => {
 
 const getCurrentBrawlStats = (id) => {
   const stats = ownGuild.guilds.find(i => i.id === id);
+  
   return `
     <div class="small">
       <span class="text-success small me-2">${stats.wins} W</span>
       <span class="text-danger small me-2">${stats.losses} L</span>
       <span class="text-warning small me-2">${stats.draws} D</span>
-      <div class="text-muted small">${stats.pts} pts - ${stats.completed_battles}/${stats.total_battles}</div>
+      <div class="text-muted small">${stats.pts} pts</div>
     </div>
   `;
 }
