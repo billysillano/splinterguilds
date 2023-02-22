@@ -5,6 +5,7 @@
   import GuildBrawlResult from "./GuildBrawlResult.svelte";
   import { BRAWL_STATUS } from "../constants";
     import AppSpinner from "./AppSpinner.svelte";
+    import GuildCurrentBrawlMembers from "./GuildCurrentBrawlMembers.svelte";
 
   let brawlData = [];
   let loading = true;
@@ -29,10 +30,12 @@
         </div>
       {:else if brawlData && brawlData.length}
     <div id="guild-brawl-latest" class="accordion-collapse collapse show">
-        <p class="px-3">ID: {$guildInfo.tournament_id} - Cycle: #{brawlData[0].cycle}</p>
+      <p class="px-3">ID: {$guildInfo.tournament_id} - Cycle: #{brawlData[0].cycle}</p>
 
-        <GuildBrawlResult brawl="{brawlData}"/>
-      </div>
+      <GuildBrawlResult brawl="{brawlData}"/>
+
+      <GuildCurrentBrawlMembers />
+    </div>
    {/if}
   </div>
 </div>
