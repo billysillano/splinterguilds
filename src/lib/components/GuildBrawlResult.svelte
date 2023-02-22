@@ -5,7 +5,7 @@
   export let brawl;
   let results = [];
   onMount(() => {
-    results = brawl.brawl_info?.guilds || [];
+    results = brawl;
   })
 </script>
 {#if (results && results.length)} 

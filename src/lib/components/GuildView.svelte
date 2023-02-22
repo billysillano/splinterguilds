@@ -1,14 +1,12 @@
 <script>
   import { guildMembers, guildInfo, searchKey } from "../store/guilds";
   import GuildMembers from './GuildMembers.svelte';
-  import GuildBuildings from './GuildBuildings.svelte';
   import GuildCrest from "./GuildCrest.svelte";
   import GuildBrawlStats from "./GuildBrawlStats.svelte";
-  import GuildBrawlLatest from "./GuildBrawlLatest.svelte";
-  import { BRAWL_STATUS } from "../constants";
   import { formatCompactNumber, setUrl } from "../utils";
   import GuildTiers from "./GuildTiers.svelte";
   import GuildPastBrawls from "./GuildPastBrawls.svelte";
+  import GuildCurrentBrawl from "./GuildCurrentBrawl.svelte";
 
   const handleCloseMembers = () => {
     $guildMembers = [];
@@ -65,21 +63,10 @@
     {/if}
   </div>
 
-  
-  <GuildBrawlStats/>
+  <GuildCurrentBrawl/>
+
+  <GuildBrawlStats/> 
 
   <GuildPastBrawls/>
-
-  <div class="accordion accordion-flush  mb-3">
-    <div class="accordion-item">
-      {#if ($guildInfo.tournament_status)}
-      <GuildBrawlLatest/>
-      {:else if ($guildInfo.tournament_status === 0)}
-      <div class="p-3"><strong>Current Brawl</strong> : {BRAWL_STATUS[$guildInfo.tournament_status]}</div>
-      {:else}
-        <div class="h1 text-center">No participation</div>
-      {/if}
-    </div>
-  </div>
 </div>
 {/if}

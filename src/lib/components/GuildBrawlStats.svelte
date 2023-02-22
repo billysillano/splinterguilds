@@ -169,7 +169,7 @@
       <button class="accordion-button bg-dark"  data-bs-toggle="collapse" data-bs-target="#player-brawl-result" aria-expanded="true" aria-controls="player-brawl-result">
         <div class="d-flex flex-wrap">
           <div class="h5 mb-0">Last 10 brawls
-            <span class="ms-3 badge bg-primary"><span class="text-muted">Ave placement:</span> {guildStats.brawl_rank}</span>
+            <span class="ms-3 badge bg-primary"><span class="text-muted">Avg placement:</span> {guildStats.brawl_rank}</span>
             <span class="ms-3 badge bg-primary"><span class="text-muted">Wins:</span>  {guildStats.wins}</span>
             <span class="ms-3 badge bg-primary"><span class="text-muted">Battles:</span> {guildStats.battles}</span>
             <span class="ms-3 badge bg-primary"><span class="text-muted">Win rate:</span>  {guildStats.win_rate}%</span>
@@ -178,6 +178,7 @@
       </button>
     </div>
     <div id="player-brawl-result" class="accordion-collapse collapse show">
+      <p class="px-4">Showing brawl cycles {$guildInfo.brawl_stats.start_cycle} to {$guildInfo.brawl_stats.end_cycle}</p>
       <div class="table-responsive max-h-500 border border-primary">
         <table id="table-brawl-stats" class="table table-hover table-sm align-middle table-fixed mb-0">
           <thead>
