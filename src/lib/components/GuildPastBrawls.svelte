@@ -268,7 +268,7 @@
               
               <tr  id="brawl-summary-{brawl.tournament_id}" class="accordion-collapse collapse">
                 <td colspan="10">
-                  <GuildBrawlResult brawl="{ brawl.brawl_info?.guilds || []}"/>
+                  <GuildBrawlResult brawl="{ brawl.brawl_info?.guilds || []}" status="2"/>
                 </td>
               </tr>
             {/each}
