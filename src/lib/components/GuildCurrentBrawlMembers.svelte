@@ -51,7 +51,7 @@
     let res = await getGuildBrawlInfo({tournament_id, id});
     if (res && res.players) {
       results = res.players.map(i => {
-        i['win_rate'] = Number((i.wins/i.entered_battles) * 100).toFixed(2);
+        i['win_rate'] = Number((i.wins/i.total_battles) * 100).toFixed(2);
         return i;
       })
       players = [...results];
