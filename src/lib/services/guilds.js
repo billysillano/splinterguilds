@@ -3,7 +3,7 @@ import { API2_URL, GAME_API_URL } from '../constants';
 export const getGuilds = async () => {
   const res = await fetch(`${API2_URL}/guilds/list`);
   const guildsList = await res.json();
-  return guildsList;
+  return guildsList.guilds;
 }
 
 export const getGuildInfo = async (id) => {
