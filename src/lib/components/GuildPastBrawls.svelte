@@ -81,7 +81,7 @@
           } = p;
   
           if (!players[player]) players[player] = [];
-  
+          
           players[player] = [...players[player], {
             brawl_level,
             draws,
@@ -112,6 +112,7 @@
             total_battles: 0,
             wins: 0,
             frays:{},
+            brawls_particated: 0,
             player,
            };
            playerStats[player] = res
@@ -123,6 +124,7 @@
         res.meta_pts += value.meta_pts,
         res.total_battles += value.total_battles,
         res.wins += value.wins
+        res.brawls_particated += 1
 
         return res;
       }, null);
@@ -294,6 +296,7 @@
                 <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'draws')}">Draws  <span class="ms-2">&#8597;</span></th>
                 <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'total_battles')}">Battles  <span class="ms-2">&#8597;</span></th>
                 <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'win_rate')}">Win rate  <span class="ms-2">&#8597;</span></th>
+                <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortGuildMembersHandler(e, 'brawls_particated')}"># of Brawls  <span class="ms-2">&#8597;</span></th>
               </tr>
             </thead>
             <tbody>
@@ -327,6 +330,11 @@
                 <td class="text-nowrap">
                   <div class="px-3">
                     {stats.win_rate}%
+                  </div>
+                </td>
+                <td class="text-nowrap">
+                  <div class="px-3">
+                    {stats.brawls_particated}
                   </div>
                 </td>
               </tr>
