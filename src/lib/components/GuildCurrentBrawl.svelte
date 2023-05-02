@@ -18,7 +18,7 @@
     if ($guildInfo.tournament_status === 1) {
       let data = await getGuildBrawlInfo({tournament_id, id});
       brawlData = data.guilds
-      console.log(data.guilds)
+      // console.log(data.guilds)
       
     } else {
       brawlData = await getGuildBrawlByTournament(tournament_id);

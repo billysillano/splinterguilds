@@ -7,7 +7,7 @@
   let results = [];
   onMount(() => {
     results = brawl;
-    console.log(results)
+    // console.log(results)
   })
 </script>
 {#if (results && results.length)} 
