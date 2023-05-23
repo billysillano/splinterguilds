@@ -42,7 +42,7 @@
         {#if status === 1}
         <td><div class="px-2">{guild.completed_battles}/ {guild.total_battles}</div></td>
         {:else if status === 2}
-        <td><div class="px-2"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(guild.other_payout)}</div></td>
+        <td><div class="px-2"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(guild.total_payout)}</div></td>
         <td><div class="px-2"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png" alt="SPS">{formatCompactNumber(guild.member_sps_payout)}</div></td>
         <td><div class="px-2"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png" alt="Merrits">{formatCompactNumber(guild.member_merits_payout)}</div></td>
         {/if}

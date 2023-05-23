@@ -241,7 +241,7 @@
               <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'wins')}">Wins <span class="ms-2">&#8597;</span></th>
               <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'losses')}">Losses <span class="ms-2">&#8597;</span></th>
               <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'draws')}">Draws <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'other_payout')}">Crowns <span class="ms-2">&#8597;</span></th>
+              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'total_payout')}">Crowns <span class="ms-2">&#8597;</span></th>
               <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'member_sps_payout')}">SPS <span class="ms-2">&#8597;</span></th>
               <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'member_merits_payout')}">Merits <span class="ms-2">&#8597;</span></th>
             </tr>
@@ -263,7 +263,7 @@
                 <td><div class="px-3 text-nowrap">{brawl.wins}</div></td>
                 <td><div class="px-3 text-nowrap">{brawl.losses}</div></td>
                 <td><div class="px-3 text-nowrap">{brawl.draws}</div></td>
-                <td><div class="px-3 text-nowrap"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(brawl.other_payout)}</div></td>
+                <td><div class="px-3 text-nowrap"><img width="25px" class="me-2" src="https://d36mxiodymuqjm.cloudfront.net/website/guilds/img_guild_crown_75.png" alt="Crowns">{formatCompactNumber(brawl.total_payout)}</div></td>
                 <td><div class="px-3 text-nowrap"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png" alt="SPS">{formatCompactNumber(brawl.member_sps_payout)}</div></td>
                 <td><div class="px-3 text-nowrap"><img width="25px" class="me-2"  src="https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png" alt="Merrits">{formatCompactNumber(brawl.member_merits_payout)}</div></td>
               </tr>
