@@ -116,6 +116,7 @@
             total_battles: 0,
             wins: 0,
             fray_name: '',
+            brawls_particated: 0,
           }
         }
         res.frays[value.fray_index].draws += value.draws,
@@ -126,6 +127,7 @@
         res.frays[value.fray_index].total_battles += value.total_battles,
         res.frays[value.fray_index].wins += value.wins
         res.frays[value.fray_index].fray_name = getFrayName(value.fray_index, value.brawl_level)
+        res.frays[value.fray_index].brawls_particated += 1
           
         return res;
       }, null);
@@ -240,8 +242,31 @@
               </td>
             </tr>
             <tr  id="player-fray-result-{playerIndex}" class="accordion-collapse collapse">
-              <td colspan="6">
+              <td colspan="7">
                 <table class="table table-sm mb-0 w-100 table-fixed">
+                  <tr>
+                    <td>
+                      <strong class="px-3 fray-cell text-muted">Fray</strong>
+                    </td>
+                    <td>
+                      <strong class="px-3 fray-cell text-muted">Wins</strong>
+                    </td>
+                    <td>
+                      <strong class="px-3 fray-cell text-muted">Losses</strong>
+                    </td>
+                    <td>
+                      <strong class="px-3 fray-cell text-muted">Draws</strong>
+                    </td>
+                    <td>
+                      <strong class="px-3 fray-cell text-muted">Battles</strong>
+                    </td>
+                    <td>
+                      <strong class="px-3 fray-cell text-muted">Win rate</strong>
+                    </td>
+                    <td>
+                      <strong class="px-3 fray-cell text-muted">Brawls</strong>
+                    </td>
+                  </tr>
                   {#each Object.entries(stats.frays) as [frayIndex, frayResult]}
                     <tr>
                       <td>
@@ -254,6 +279,7 @@
                       <td><div class="px-3 fray-cell text-muted">{frayResult.draws}</div></td>
                       <td><div class="px-3 fray-cell text-muted">{frayResult.total_battles}</div></td>
                       <td><div class="px-3 fray-cell text-muted">{Number((frayResult.wins/frayResult.entered_battles) * 100).toFixed(2) }%</div></td>
+                      <td><div class="px-3 fray-cell text-muted">{frayResult.brawls_particated}</div></td>
                     </tr>
                   {/each}
                 </table>
@@ -274,7 +300,7 @@
   }
 
   .text-extra-small {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 14px;
   }
 
