@@ -1,4 +1,17 @@
 
+#main {
+  background-image: url(https://d36mxiodymuqjm.cloudfront.net/website/bg_wild.jpg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 700px;
+}
+
+#main > .container {
+  background: #0000006e;
+  padding: 10px;
+}
+
 .pointer {
   cursor: pointer;
 }
