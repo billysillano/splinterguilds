@@ -36,7 +36,7 @@
 
     dataIsLoaded = true;
     loading = true;
-    
+    brawls = []
     
     const records = await getGuildBrawlRecords(guildId, start, end);
     guildStats = {
@@ -231,23 +231,23 @@
       <!-- brawls -->
       {#if brawls.length}
       <div class="table-responsive max-h-500 border border-primary   {loading && 'd-none'}">
+        {#each brawls as brawl}
         <table id="table-past-brawls" class="table table-sm table-hover align-middle mb-0">
-          <thead>
-            <tr class="bg-darker">
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'cycle')}">Cycle <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'tournament_id')}">ID <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap text-center" role="button" on:click="{(e) => sortBrawlsHandler(e, 'brawl_level')}">Tier <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'brawl_rank')}">Place <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'wins')}">Wins <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'losses')}">Losses <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'draws')}">Draws <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'total_payout')}">Crowns <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'member_sps_payout')}">SPS <span class="ms-2">&#8597;</span></th>
-              <th class="px-3 text-nowrap" role="button" on:click="{(e) => sortBrawlsHandler(e, 'member_merits_payout')}">Merits <span class="ms-2">&#8597;</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each brawls as brawl}
+            <thead>
+              <tr class="bg-darker">
+                <th class="px-3 text-nowrap" role="button">Cycle</th>
+                <th class="px-3 text-nowrap" role="button">ID</th>
+                <th class="px-3 text-nowrap text-center" role="button">Tier</th>
+                <th class="px-3 text-nowrap" role="button">Place</th>
+                <th class="px-3 text-nowrap" role="button">Wins</th>
+                <th class="px-3 text-nowrap" role="button">Losses</th>
+                <th class="px-3 text-nowrap" role="button">Draws</th>
+                <th class="px-3 text-nowrap" role="button">Crowns</th>
+                <th class="px-3 text-nowrap" role="button">SPS</th>
+                <th class="px-3 text-nowrap" role="button">Merits</th>
+              </tr>
+            </thead>
+            <tbody>
               <tr role="button" data-bs-toggle="collapse" data-bs-target="#brawl-summary-{brawl.tournament_id}" aria-expanded="false" class="collapsed">
                 <td>
                   <div class="px-3">
@@ -273,9 +273,9 @@
                   <GuildBrawlResult brawl="{ brawl.brawl_info?.guilds || []}" status="2"/>
                 </td>
               </tr>
-            {/each}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+          {/each}
       </div>
       {:else if !loading}
         <p class="text-center  p-3">No record found</p>
