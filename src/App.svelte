@@ -6,7 +6,7 @@
 
   function copyText() {
     // Copy the text inside the text field
-    navigator.clipboard.writeText('nevermeltice');
+    navigator.clipboard.writeText('boomburst');
 
     // Alert the copied text
     alert('Copied!');
@@ -33,7 +33,7 @@
       <div class="text-end text-muted my-5">
         IGN:
         <span role="button" class="badge bg-primary text-secondary" on:click={copyText} title="click to copy">
-          NEVERMELTICE
+          BOOMBURST
         </span>
       </div>
     </footer>
